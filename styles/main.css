@@ -9,6 +9,45 @@ h1{
 	line-height:1.5em;
 }
 
+h2{
+	font-family: 'Press Start 2P', cursive;
+	display: inline-block;
+	position:relative;
+	font-size:1.3em;
+	right:0;
+	text-align:center;
+}
+
+div#inventory{
+	bottom:200px;
+	left: 1000px;
+	padding:0;
+	display:inline-block;
+	position:absolute;
+}
+
+
+div#inventory table
+{
+	font-family:'Press Start 2P', cursive;
+	border: 1px solid black;
+}
+
+div#inventory tr
+{
+	border: 1px solid black;
+}
+
+div#inventory td
+{
+	border: 1px solid black;
+}
+
+div#inventory td.name
+{
+	width: 100px;
+}
+
 div#gridContainer{
 	top:5px;
 	left:5px;
