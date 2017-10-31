@@ -108,6 +108,33 @@ function initializeInventory()
 	// add the row to the table
 	inventory.appendChild(newRow);
 }
+
+function modifyInventory(let item)
+{
+	let rowToChange = -1;
+	
+	for(let row = 0; row < inventory.rows.length; row++)
+	{
+		if(inventory.rows[row].cells[0].innerHTML == item)
+		{
+			rowToChange = row;
+		}
+	}
+	
+	if(rowToChange > -1)
+	{
+		let quantity = inventory.rows[rowToChange].cells[1].innerHTML;
+		quantity++;
+		inventory.rows[rowToChange].cells[1].innerHTML = quantity;
+	}
+	else
+	{
+		inventory.insertRow(-1);
+		inventory.rows[inventory.rows.length - 1].cells[0].innerHTML = item;
+		inventory.rows[inventory.rows.length - 1].cells[1].innerHTML = 1;
+	}
+}
+
 function createGridElements(numRows,numCols){
 	const span = document.createElement('span');
 	span.className = 'cell';
@@ -257,8 +284,20 @@ function setupEvents(){
 		
 		}
 		movePlayer(e);
+		
 		drawGameObjects(currentGameObjects);
 	};
+}
+
+function checkCollision()
+{
+	for(let i = 0; i < allGameObjects.length; i++)
+	{
+		if(player.x == allGameObjects[i].x && player.y == allGameObjects[i].y)
+		{
+			return allGameObjects[i].type;
+		}
+	}
 }
 
 function gridClicked(e){
