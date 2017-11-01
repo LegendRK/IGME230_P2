@@ -95,41 +95,53 @@ function initializeInventory()
 	const newRow = document.createElement("TR");
 	
 	// create a column for the name and quantity
-	const newCol1 = document.createElement("TD");
-	const newCol2 = document.createElement("TD");
-	newCol1.innerHTML = "Name";
-	newCol2.innerHTML = "Qty.";
-	newCol1.className += "name";
+	const newHead1 = document.createElement("TH");
+	const newHead2 = document.createElement("TH");
+	newHead1.innerHTML = "Name";
+	newHead2.innerHTML = "Qty.";
+	newHead1.className += "name";
 
 	// add the columns to the row
-	newRow.appendChild(newCol1);
-	newRow.appendChild(newCol2);
+	newRow.appendChild(newHead1);
+	newRow.appendChild(newHead2);
 
 	// add the row to the table
 	inventory.appendChild(newRow);
 }
 
-function modifyInventory(let item)
+// adds an item to the inventory
+function modifyInventory(item)
 {
+    // default is append at the end
 	let rowToChange = -1;
 	
+    // check if one instance of the item already exists
 	for(let row = 0; row < inventory.rows.length; row++)
 	{
+        console.log(inventory.rows.length);
+        console.log(inventory.rows[row].cells[0].innerHTML);
 		if(inventory.rows[row].cells[0].innerHTML == item)
 		{
-			rowToChange = row;
+			rowToChange = row;           // change it so now it just increases the quantity
 		}
 	}
 	
+    // if the item exists in the ionventory
 	if(rowToChange > -1)
 	{
 		let quantity = inventory.rows[rowToChange].cells[1].innerHTML;
 		quantity++;
 		inventory.rows[rowToChange].cells[1].innerHTML = quantity;
 	}
-	else
+	else           // if the item doesn't exist
 	{
 		inventory.insertRow(-1);
+        
+        // create new cells for name and quantity
+        inventory.rows[inventory.rows.length - 1].insertCell(0);
+        inventory.rows[inventory.rows.length - 1].insertCell(1);
+        
+        // add the name and quantity to these cells
 		inventory.rows[inventory.rows.length - 1].cells[0].innerHTML = item;
 		inventory.rows[inventory.rows.length - 1].cells[1].innerHTML = 1;
 	}
@@ -223,7 +235,6 @@ function drawGameObjects(array){
 		gameObject.element.style.left = `${gameObject.x * (cellWidth + cellSpacing)}px`;
 		gameObject.element.style.top = `${gameObject.y * (cellWidth + cellSpacing)}px`;
 	}
-	
 }
 
 
@@ -256,6 +267,8 @@ function movePlayer(e){
 		break;
 	}
 	
+    
+    
 	function checkIsLegalMove(nextX,nextY){
 		let nextTile = currentGameWorld[nextY][nextX];
 		if (nextTile != worldTile.WALL && nextTile != worldTile.WATER){
@@ -284,18 +297,39 @@ function setupEvents(){
 		
 		}
 		movePlayer(e);
-		
+		checkCollision();
 		drawGameObjects(currentGameObjects);
 	};
 }
 
+// ce tile the player steps on
 function checkCollision()
 {
-	for(let i = 0; i < allGameObjects.length; i++)
+    // loop through the gameObjects list
+	for(let i = 0; i < allGameObjects.level1.length; i++)
 	{
-		if(player.x == allGameObjects[i].x && player.y == allGameObjects[i].y)
+        //.level1debugger;
+        // if the players x and y matches the objects x and y
+		if(player.x == allGameObjects.level1[i].x && player.y == allGameObjects.level1[i].y)
 		{
-			return allGameObjects[i].type;
+            //debugger;
+            console.log(allGameObjects.level1[i].type);            // debug
+            switch(allGameObjects.level1[i].type)
+            {
+                case "key":
+                    modifyInventory(allGameObjects.level1[i].name);
+                    break;
+                case "chest":
+                    break;
+                case "treasure":
+                    modifyInventory(allGameObjects.level1[i].name);
+                    break;
+                case "ring":
+                    modifyInventory(allGameObjects.level1[i].name);
+                    break;
+            }
+            // return the type
+			return allGameObjects.level1[i].type;
 		}
 	}
 }

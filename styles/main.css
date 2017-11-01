@@ -43,6 +43,16 @@ div#inventory td
 	border: 1px solid black;
 }
 
+div#inventory th
+{
+    border: 1px solid black;
+}
+
+div#inventory th.name
+{
+    width: 100px;
+} 
+
 div#inventory td.name
 {
 	width: 100px;
