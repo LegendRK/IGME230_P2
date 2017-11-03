@@ -118,8 +118,6 @@ function modifyInventory(item)
     // check if one instance of the item already exists
 	for(let row = 0; row < inventory.rows.length; row++)
 	{
-        console.log(inventory.rows.length);
-        console.log(inventory.rows[row].cells[0].innerHTML);
 		if(inventory.rows[row].cells[0].innerHTML == item)
 		{
 			rowToChange = row;           // change it so now it just increases the quantity
@@ -147,6 +145,68 @@ function modifyInventory(item)
 	}
 }
 
+function openChest()
+{
+    // the player does not have the key by default
+    let hasKey = -1;
+    
+    // check if A key exists in the inventory
+	for(let row = 0; row < inventory.rows.length; row++)
+	{
+		if(inventory.rows[row].cells[0].innerHTML == "Key")
+		{
+			hasKey = 1;           // The player has a key
+            let keyQuant = inventory.rows[row].cells[1].innerHTML;
+            keyQuant--;
+            
+            // check if it's their last key; delete the row or subtract quantity
+            if(keyQuant == 0)
+                inventory.deleteRow(row);
+            else
+                inventory.rows[row].cells[1].innerHTML = keyQuant;
+		  
+            // exit the loop
+            break;
+        }
+	}
+    
+    // the player used a key
+    if(hasKey == 1)
+    {
+        let randomTreasureIndex = Math.floor(Math.random() * chestItems.treasureList.length);
+        console.log(randomTreasureIndex);
+        modifyInventory(chestItems.treasureList[randomTreasureIndex].name);
+    }
+    
+}
+    
+function removeObjectFromLevel(objectX, objectY)
+{
+    // remove from current game objects
+    for(let i = 0; i < currentGameObjects.length ; i++)
+    {
+        if(currentGameObjects[i].x == objectX && currentGameObjects[i].y == objectY)
+        {
+            currentGameObjects.splice(i, 1);
+            console.log(currentGameObjects.length);
+            break;
+        }
+    }
+    
+    // remove from all game objects
+    for(let i = 0; i < allGameObjects.level1.length ; i++)
+    {
+        if(allGameObjects.level1[i].x == objectX && allGameObjects.level1[i].y == objectY)
+        {
+            allGameObjects.level1.splice(i, 1);
+            //console.log(currentGameObjects.length);
+            break;
+        }
+    }
+    
+    
+}
+    
 function createGridElements(numRows,numCols){
 	const span = document.createElement('span');
 	span.className = 'cell';
@@ -180,6 +240,7 @@ function loadLevel(levelNum = 1){
 	// pull the current level data
 	const levelObjects = allGameObjects["level" + levelNum];
 	
+    debugger;
 	// loop through this level's objects ... 
 	for (let obj of levelObjects){
 		const clone = Object.assign({}, obj); 		// clone the object
@@ -318,18 +379,20 @@ function checkCollision()
             {
                 case "key":
                     modifyInventory(allGameObjects.level1[i].name);
+                    removeObjectFromLevel(allGameObjects.level1[i].x, allGameObjects.level1[i].y);
                     break;
                 case "chest":
+                    openChest();
                     break;
                 case "treasure":
                     modifyInventory(allGameObjects.level1[i].name);
+                    removeObjectFromLevel(allGameObjects.level1[i].x, allGameObjects.level1[i].y);
                     break;
                 case "ring":
                     modifyInventory(allGameObjects.level1[i].name);
+                    removeObjectFromLevel(allGameObjects.level1[i].x, allGameObjects.level1[i].y);
                     break;
             }
-            // return the type
-			return allGameObjects.level1[i].type;
 		}
 	}
 }

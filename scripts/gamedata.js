@@ -53,4 +53,12 @@ const allGameObjects = {
 	]
 }
 
+const chestItems = {   
+    treasureList:[
+        {className: cssClass.TREASURE1, name: "Pendant"},
+        {className: cssClass.TREASURE2, name: "Gold"},
+        {className: cssClass.RING1, name:"Ring"}
+    ]
+}
+
 
