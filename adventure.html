@@ -180,7 +180,7 @@ function openChest()
     
 }
     
-function removeObjectFromLevel(objectX, objectY)
+function removeObjectFromLevel(objectX, objectY, objectClass)
 {
     // remove from current game objects
     for(let i = 0; i < currentGameObjects.length ; i++)
@@ -191,6 +191,14 @@ function removeObjectFromLevel(objectX, objectY)
             console.log(currentGameObjects.length);
             break;
         }
+    }
+    
+    // remove from the DOM
+    let container = document.querySelector("#gridContainer");
+    for(let i = 0; i < container.children.length; i++)
+    {
+        if(container.children[i].className == "gameObject " + objectClass)
+            container.removeChild(container.children[i]);
     }
 }
     
@@ -226,8 +234,7 @@ function loadLevel(levelNum = 1){
 	/* let's instantiate our game objects */
 	// pull the current level data
 	const levelObjects = allGameObjects["level" + levelNum];
-	
-    debugger;
+
 	// loop through this level's objects ... 
 	for (let obj of levelObjects){
 		const clone = Object.assign({}, obj); 		// clone the object
@@ -367,18 +374,18 @@ function checkCollision()
             {
                 case "key":
                     modifyInventory(currentGameObjects[i].name);
-                    removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y);
+                    removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y, currentGameObjects[i].className);
                     break;
                 case "chest":
                     openChest();
                     break;
                 case "treasure":
                     modifyInventory(currentGameObjects[i].name);
-                    removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y);
+                    removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y, currentGameObjects[i].className);
                     break;
                 case "ring":
                     modifyInventory(currentGameObjects[i].name);
-                    removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y);
+                    removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y, currentGameObjects[i].className);
                     break;
             }
 		}
