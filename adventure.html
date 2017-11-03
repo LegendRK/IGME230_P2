@@ -192,19 +192,6 @@ function removeObjectFromLevel(objectX, objectY)
             break;
         }
     }
-    
-    // remove from all game objects
-    for(let i = 0; i < allGameObjects.level1.length ; i++)
-    {
-        if(allGameObjects.level1[i].x == objectX && allGameObjects.level1[i].y == objectY)
-        {
-            allGameObjects.level1.splice(i, 1);
-            //console.log(currentGameObjects.length);
-            break;
-        }
-    }
-    
-    
 }
     
 function createGridElements(numRows,numCols){
@@ -359,6 +346,7 @@ function setupEvents(){
 		}
 		movePlayer(e);
 		checkCollision();
+		drawGrid(currentGameWorld);
 		drawGameObjects(currentGameObjects);
 	};
 }
@@ -367,30 +355,30 @@ function setupEvents(){
 function checkCollision()
 {
     // loop through the gameObjects list
-	for(let i = 0; i < allGameObjects.level1.length; i++)
+	for(let i = 0; i < currentGameObjects.length; i++)
 	{
         //.level1debugger;
         // if the players x and y matches the objects x and y
-		if(player.x == allGameObjects.level1[i].x && player.y == allGameObjects.level1[i].y)
+		if(player.x == currentGameObjects[i].x && player.y == currentGameObjects[i].y)
 		{
             //debugger;
-            console.log(allGameObjects.level1[i].type);            // debug
-            switch(allGameObjects.level1[i].type)
+            console.log(currentGameObjects[i].type);            // debug
+            switch(currentGameObjects[i].type)
             {
                 case "key":
-                    modifyInventory(allGameObjects.level1[i].name);
-                    removeObjectFromLevel(allGameObjects.level1[i].x, allGameObjects.level1[i].y);
+                    modifyInventory(currentGameObjects[i].name);
+                    removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y);
                     break;
                 case "chest":
                     openChest();
                     break;
                 case "treasure":
-                    modifyInventory(allGameObjects.level1[i].name);
-                    removeObjectFromLevel(allGameObjects.level1[i].x, allGameObjects.level1[i].y);
+                    modifyInventory(currentGameObjects[i].name);
+                    removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y);
                     break;
                 case "ring":
-                    modifyInventory(allGameObjects.level1[i].name);
-                    removeObjectFromLevel(allGameObjects.level1[i].x, allGameObjects.level1[i].y);
+                    modifyInventory(currentGameObjects[i].name);
+                    removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y);
                     break;
             }
 		}
