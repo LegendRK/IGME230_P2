@@ -192,6 +192,17 @@ function removeObjectFromLevel(objectX, objectY, objectClass)
             break;
         }
     }
+	
+	let currentLevel = "level" + currentLevelNumber;
+	for(let i = 0; i < allGameObjects[currentLevel].length; i++)
+	{
+		if(allGameObjects[currentLevel][i].x == objectX && allGameObjects[currentLevel][i].y == objectY)
+        {
+            allGameObjects[currentLevel].splice(i, 1);
+            console.log(allGameObjects[currentLevel].length);
+            break;
+        }
+	}
     
     // remove from the DOM
     let container = document.querySelector("#gridContainer");
@@ -387,6 +398,9 @@ function checkCollision()
                     modifyInventory(currentGameObjects[i].name);
                     removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y, currentGameObjects[i].className);
                     break;
+				case "door":
+					changeLevel();
+					break;
             }
 		}
 	}
@@ -404,6 +418,67 @@ function gridClicked(e){
 	console.log(`${col},${row}`);
 }
 
+function changeLevel()
+{
+	if(currentLevelNumber == 1)
+	{
+		let container = document.querySelector("#gridContainer");
+		for(let i = container.children.length - 1; i >= 0; i--)
+		{
+			if(container.children[i].className != "gameObject player")
+			container.removeChild(container.children[i]);
+		}
+		
+		const node =  document.createElement("span");
+		node.className = "gameObject";
+		const levelObjects = allGameObjects["level2"];
+
+		// loop through this level's objects ... 
+		for (let obj of levelObjects){
+			const clone = Object.assign({}, obj); 		// clone the object
+			clone.element = node.cloneNode(true); 		// clone the element
+			clone.element.classList.add(obj.className); // add the className so we see the right image
+			currentGameObjects.push(clone);				// add to currentGameObjects array  (so it gets moved onto the map)
+			container.appendChild(clone.element);		// add to DOM tree (so we can see it!)
+		}
+		
+		currentLevelNumber = 2;
+		player.x = 1;
+	}
+	if(currentLevelNumber == 2)
+	{
+		if(player.x == 0)
+		{
+			let container = document.querySelector("#gridContainer");
+			for(let i = container.children.length - 1; i >= 0; i--)
+			{
+				if(container.children[i].className != "gameObject player")
+				container.removeChild(container.children[i]);
+			}
+		
+			const node =  document.createElement("span");
+			node.className = "gameObject";
+			const levelObjects = allGameObjects["level1"];
+
+			// loop through this level's objects ... 
+			for (let obj of levelObjects){
+				const clone = Object.assign({}, obj); 		// clone the object
+				clone.element = node.cloneNode(true); 		// clone the element
+				clone.element.classList.add(obj.className); // add the className so we see the right image
+				currentGameObjects.push(clone);				// add to currentGameObjects array  (so it gets moved onto the map)
+				container.appendChild(clone.element);		// add to DOM tree (so we can see it!)
+			}
+		
+			currentLevelNumber = 1;
+			player.x = 28;
+		}
+	}
+	
+	currentGameWorld = gameworld["world" + currentLevelNumber];
+	let numCols = currentGameWorld[0].length;
+	let numRows = currentGameWorld.length;
+	createGridElements(numRows,numCols);
+}
 </script>
 
 </body>
