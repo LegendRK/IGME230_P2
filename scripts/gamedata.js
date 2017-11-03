@@ -51,6 +51,7 @@ const gameworld = {
 // these map to the CSS classes in main.css
 const cssClass = Object.freeze({
 	CHEST1: 	"chest1",
+	CHEST2:		"chest2",
 	KEY1: 		"key1",
 	MONSTER1: 	"monster1",
 	MONSTER2: 	"monster2",

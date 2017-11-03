@@ -145,7 +145,7 @@ function modifyInventory(item)
 	}
 }
 
-function openChest()
+function openChest(chest)
 {
     // the player does not have the key by default
     let hasKey = -1;
@@ -176,6 +176,28 @@ function openChest()
         let randomTreasureIndex = Math.floor(Math.random() * chestItems.treasureList.length);
         console.log(randomTreasureIndex);
         modifyInventory(chestItems.treasureList[randomTreasureIndex].name);
+		
+		// removes the current closed chest from the world
+		removeObjectFromLevel(chest.x, chest.y, chest.className);
+		let container = document.querySelector("#gridContainer");
+		for(let i = container.children.length - 1; i >= 0; i--)
+		{
+			if(container.children[i].className == "gameObject chest")
+			container.removeChild(container.children[i]);
+		}
+		
+		// adds a new open chest to the world
+		const node =  document.createElement("span");
+		node.className = "gameObject";
+		let openChest = {x:24, y:15, type:"openChest", className: cssClass.CHEST2, name:"OpenChest"};
+		allGameObjects["level" + currentLevelNumber].push(openChest);
+		
+		let obj = allGameObjects["level" + currentLevelNumber][allGameObjects["level" + currentLevelNumber].length - 1];
+		const clone = Object.assign({}, obj); 		// clone the object
+		clone.element = node.cloneNode(true); 		// clone the element
+		clone.element.classList.add(obj.className); // add the className so we see the right image
+		currentGameObjects.push(clone);				// add to currentGameObjects array  (so it gets moved onto the map)
+		container.appendChild(clone.element);		// add to DOM tree (so we can see it!)
     }
     
 }
@@ -193,6 +215,7 @@ function removeObjectFromLevel(objectX, objectY, objectClass)
         }
     }
 	
+	// remove from all objects so that picked up objects stay gone
 	let currentLevel = "level" + currentLevelNumber;
 	for(let i = 0; i < allGameObjects[currentLevel].length; i++)
 	{
@@ -388,7 +411,8 @@ function checkCollision()
                     removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y, currentGameObjects[i].className);
                     break;
                 case "chest":
-                    openChest();
+                    openChest(currentGameObjects[i]);
+					drawGrid(currentGameWorld);
                     break;
                 case "treasure":
                     modifyInventory(currentGameObjects[i].name);
@@ -418,66 +442,74 @@ function gridClicked(e){
 	console.log(`${col},${row}`);
 }
 
+// changes the level when the player goes through a door
 function changeLevel()
 {
 	if(currentLevelNumber == 1)
 	{
-		let container = document.querySelector("#gridContainer");
-		for(let i = container.children.length - 1; i >= 0; i--)
-		{
-			if(container.children[i].className != "gameObject player")
-			container.removeChild(container.children[i]);
-		}
+		resetLevel(2);
 		
-		const node =  document.createElement("span");
-		node.className = "gameObject";
-		const levelObjects = allGameObjects["level2"];
-
-		// loop through this level's objects ... 
-		for (let obj of levelObjects){
-			const clone = Object.assign({}, obj); 		// clone the object
-			clone.element = node.cloneNode(true); 		// clone the element
-			clone.element.classList.add(obj.className); // add the className so we see the right image
-			currentGameObjects.push(clone);				// add to currentGameObjects array  (so it gets moved onto the map)
-			container.appendChild(clone.element);		// add to DOM tree (so we can see it!)
-		}
-		
-		currentLevelNumber = 2;
 		player.x = 1;
 	}
 	if(currentLevelNumber == 2)
 	{
+		// if player enters the left door
 		if(player.x == 0)
 		{
-			let container = document.querySelector("#gridContainer");
-			for(let i = container.children.length - 1; i >= 0; i--)
-			{
-				if(container.children[i].className != "gameObject player")
-				container.removeChild(container.children[i]);
-			}
-		
-			const node =  document.createElement("span");
-			node.className = "gameObject";
-			const levelObjects = allGameObjects["level1"];
-
-			// loop through this level's objects ... 
-			for (let obj of levelObjects){
-				const clone = Object.assign({}, obj); 		// clone the object
-				clone.element = node.cloneNode(true); 		// clone the element
-				clone.element.classList.add(obj.className); // add the className so we see the right image
-				currentGameObjects.push(clone);				// add to currentGameObjects array  (so it gets moved onto the map)
-				container.appendChild(clone.element);		// add to DOM tree (so we can see it!)
-			}
-		
-			currentLevelNumber = 1;
+			resetLevel(1);
+			
 			player.x = 28;
 		}
 	}
 	
+	//resets the world to the new level
 	currentGameWorld = gameworld["world" + currentLevelNumber];
 	let numCols = currentGameWorld[0].length;
 	let numRows = currentGameWorld.length;
 	createGridElements(numRows,numCols);
+}
+
+//resets the objects in a world in order to change level
+function resetLevel(newLevel)
+{
+	let levelName = "level" + newLevel;
+	
+	// remove all objects in the DOM except for the player
+	let container = document.querySelector("#gridContainer");
+	for(let i = container.children.length - 1; i >= 0; i--)
+	{
+		if(container.children[i].className != "gameObject player")
+		{
+			container.removeChild(container.children[i]);
+		}
+	}
+	
+	//removes all objects i ncurrentGameObjects except for the player
+	for(let i = 0; i < currentGameObjects.length ; i++)
+    {
+        if(currentGameObjects[i].className != "gameObject player")
+        {
+            currentGameObjects.splice(i, 1);
+			i--;
+        }
+    }
+	
+	// add the next level's objects to currentGameObjects
+	
+	const node =  document.createElement("span");
+	node.className = "gameObject";
+	const levelObjects = allGameObjects[levelName];
+
+	// loop through this level's objects ... 
+	for (let obj of levelObjects){
+		const clone = Object.assign({}, obj); 		// clone the object
+		clone.element = node.cloneNode(true); 		// clone the element
+		clone.element.classList.add(obj.className); // add the className so we see the right image
+		currentGameObjects.push(clone);				// add to currentGameObjects array  (so it gets moved onto the map)
+		container.appendChild(clone.element);		// add to DOM tree (so we can see it!)
+	}
+		
+	currentLevelNumber = newLevel;
 }
 </script>
 

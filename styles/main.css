@@ -140,6 +140,13 @@ span.chest1{
 	position:absolute;
 	left: -100px;
 	top: -100px;
+	background-position: -830px -448px;
+}
+
+span.chest2{
+	position:absolute;
+	left: -100px;
+	top: -100px;
 	background-position: -1088px -288px;
 }
 
