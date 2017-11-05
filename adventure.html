@@ -15,6 +15,7 @@
 <h1>Adventure<br>Game!</h1>
 <!-- https://freesound.org/people/Dirtjm/sounds/262279/ -->
 <audio id="effectAudio" src="sounds/grunt.wav" controls></audio>
+<h2 id="health">Health: <span>99</span></h2>
 <div id="inventory">
 <h2>Inventory</h2>
 <table></table>
@@ -29,6 +30,7 @@ const cellWidth = 32;
 const cellSpacing = 0;
 const container = document.querySelector("#gridContainer");
 const inventory = document.querySelector("table");
+
 const cells = []; // the HTML elements - our "view"
 
 
@@ -63,13 +65,17 @@ let currentGameObjects = undefined; // a 1D array - stuff that's on top of the g
 const player = Object.seal({
 	x:-1,
 	y:-1,
+    health:30,
+    weapon:undefined,
 	element: undefined,
 	moveRight(){this.x++;},
 	moveDown(){this.y++;},
 	moveLeft(){this.x--;},
 	moveUp(){this.y--;},
+    setWeapon(weapon){this.weapon = weapon; 
+                      console.log(weapon);},
+    modifyHealth(health){this.health += health;},
 });
-
 
 // II. INIT code
 window.onload = ()=>{
@@ -84,6 +90,7 @@ window.onload = ()=>{
 	effectAudio.volume = 0.2;
 	setupEvents();
 	initializeInventory();
+    setHealth();
 }
 
 
@@ -109,8 +116,28 @@ function initializeInventory()
 	inventory.appendChild(newRow);
 }
 
+function setHealth()
+{
+    let health = document.querySelector("#health").children[0];
+    health.innerHTML = player.health;
+}    
+
+function equipWeapon(weapon)
+{
+    if(player.weapon != undefined)
+    {
+        inventory.rows[1].cells[0].innerHTML = weapon.name;
+    }
+    else
+    {
+        modifyInventory(weapon.name, true);
+    }
+    
+    player.setWeapon(weapon);
+}    
+    
 // adds an item to the inventory
-function modifyInventory(item)
+function modifyInventory(item, isWeapon = false)
 {
     // default is append at the end
 	let rowToChange = -1;
@@ -133,18 +160,137 @@ function modifyInventory(item)
 	}
 	else           // if the item doesn't exist
 	{
-		inventory.insertRow(-1);
+        if(isWeapon)
+        {
+            inventory.insertRow(1);
+            
+            // create new cells for name and quantity
+            inventory.rows[1].insertCell(0);
+            inventory.rows[1].insertCell(1);
         
-        // create new cells for name and quantity
-        inventory.rows[inventory.rows.length - 1].insertCell(0);
-        inventory.rows[inventory.rows.length - 1].insertCell(1);
+            // add the name and quantity to these cells
+            inventory.rows[1].cells[0].innerHTML = item;
+		    inventory.rows[1].cells[1].innerHTML = 1;
+        }
+        else
+        {
+            inventory.insertRow(-1);
         
-        // add the name and quantity to these cells
-		inventory.rows[inventory.rows.length - 1].cells[0].innerHTML = item;
-		inventory.rows[inventory.rows.length - 1].cells[1].innerHTML = 1;
+            // create new cells for name and quantity
+            inventory.rows[inventory.rows.length - 1].insertCell(0);
+            inventory.rows[inventory.rows.length - 1].insertCell(1);
+        
+            // add the name and quantity to these cells
+            inventory.rows[inventory.rows.length - 1].cells[0].innerHTML = item;
+		    inventory.rows[inventory.rows.length - 1].cells[1].innerHTML = 1;
+        }
 	}
 }
 
+// this function assumes there is an item to remove and is removing a legal amount of items
+function removeItemFromInventory(item, amount)
+{
+	for(let row = 0; row < inventory.rows.length; row++)
+	{
+		if(inventory.rows[row].cells[0].innerHTML == item)
+		{
+			let quantity = inventory.rows[row].cells[1].innerHTML;
+		    quantity -= amount;
+		    inventory.rows[row].cells[1].innerHTML = quantity;
+            
+            if(quantity == 0)
+                inventory.deleteRow(row);
+		}
+	}
+}
+
+function enemyHandling(enemy)
+{
+    if(confirm("Enemy Health is " + enemy.health + ". Would you like to engage?"))
+    {
+        if(checkWeapon())
+        {
+            // first generate a hit percent chance
+            let playerHit = Math.random() * 100;
+            
+            // if you didn't miss, generate a damage count 
+            if(playerHit < player.weapon.hit)
+            {
+                enemy.health -= player.weapon.power;
+                
+                // so the health is never negative
+                if(enemy.health < 0)
+                    enemy.health = 0;
+                alert("You did " + player.weapon.power + " damage to the enemy\nEnemy Health: " + enemy.health);
+            }
+            else
+            {
+                alert("You missed the enemy!");
+            }
+            
+            if(enemy.health > 0)
+            {
+                // genereate a hit chance for the enemy
+                let enemyHit = Math.random() * 100;
+
+                // generate a damage amount for the enemy
+                if(enemyHit < enemy.hit)
+                {
+                    player.modifyHealth(-enemy.power);
+                    alert("Enemy did " + enemy.power + " damage to the player");
+                }
+                else
+                {
+                    alert("The enemy missed you!");
+                }
+            }
+            
+            // check if the enemy is dead
+            // if the enemy is dead, remove from the level, and return true
+            if(enemy.health <= 0)
+            {
+                alert("The monster was slain");
+                removeObjectFromLevel(enemy.x, enemy.y, enemy.className);
+                
+                //let randomTreasureIndex = Math.floor(Math.random() * (2 * (enemyLoot.treasureList.length + 1)));
+                let randomTreasureIndex = 0;
+                console.log(randomTreasureIndex);
+                
+                if(randomTreasureIndex < enemyLoot.treasureList.length)
+                {
+                    alert("Enemy dropped " + enemyLoot.treasureList[randomTreasureIndex].name + "!")
+                    if(enemyLoot.treasureList[randomTreasureIndex].type == "weapon")
+                    {
+                        if(confirm("Would you like to equip this weapon?"))
+                            equipWeapon(enemyLoot.treasureList[randomTreasureIndex]);
+                    }
+                    else
+                    {
+                        modifyInventory(enemyLoot.treasureList[randomTreasureIndex].name);
+                    }
+                }
+                
+                
+                
+                
+                return true;
+            }
+            else
+                return false;
+        }
+        else
+        {
+            alert("You do not have an item to attack with!");
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+    
+}
+    
 function openChest(chest)
 {
     // the player does not have the key by default
@@ -200,6 +346,36 @@ function openChest(chest)
 		container.appendChild(clone.element);		// add to DOM tree (so we can see it!)
     }
     
+}
+    
+function checkItem(item)
+{
+    for(let row = 0; row < inventory.rows.length; row++)
+	{
+		if(inventory.rows[row].cells[0].innerHTML == item)
+            return true;
+    }
+    
+    return false;
+}
+
+function checkWeapon()
+{
+    if(player.weapon != undefined)
+        return true;
+    
+    return false;
+}
+    
+function checkAmountOfItem(item)
+{
+    for(let row = 0; row < inventory.rows.length; row++)
+	{
+		if(inventory.rows[row].cells[0].innerHTML == item)
+        {
+            return inventory.rows[row].cells[1].innerHTML;
+        }
+    }
 }
     
 function removeObjectFromLevel(objectX, objectY, objectClass)
@@ -313,6 +489,36 @@ function drawGrid(array){
 	}
 }
 
+function guardCheck(goldQuota)
+{
+    alert("HALT! You cannot pass until I get " + goldQuota + " gold pieces.");
+    if(checkItem("Gold"))
+    {
+        let amountOfGold = checkAmountOfItem("Gold");
+        if(amountOfGold >= goldQuota)
+        {
+            if(confirm("Ah! I see you have " + goldQuota + " gold. Would you like to pass?"))
+            {
+                alert("Thank you very much!");
+                // remove the amount of gold from the inventory
+                removeItemFromInventory("Gold", goldQuota);
+                return true;
+            }
+            else
+            {
+                alert("Ah...very well then.");
+                return false;
+            }
+        }
+        else
+        {
+        alert("You do not have enough gold to pass!");
+        effectAudio.play();
+        return false;
+        }
+    }    
+}    
+
 
 function drawGameObjects(array){
 	// player
@@ -359,10 +565,30 @@ function movePlayer(e){
     
     
 	function checkIsLegalMove(nextX,nextY){
+        for(let i = 0; i < currentGameObjects.length; i++)
+        {
+            if(currentGameObjects[i].x == nextX && currentGameObjects[i].y == nextY)
+            {
+                switch(currentGameObjects[i].type)
+                {
+                    case "guard1":
+                        if(!guardCheck(1))
+                            return false;
+                        else
+                            removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y, currentGameObjects[i].className);
+                        break;
+                    case "monster":
+                        if(!enemyHandling(currentGameObjects[i]))
+                            return false;
+                }
+            }
+        }
+        
 		let nextTile = currentGameWorld[nextY][nextX];
 		if (nextTile != worldTile.WALL && nextTile != worldTile.WATER){
 			return true;
-		}else{
+        }
+        else{
 			effectAudio.play();
 			return false;
 		}
@@ -386,26 +612,30 @@ function setupEvents(){
 		
 		}
 		movePlayer(e);
+        setHealth();
 		checkCollision();
 		drawGrid(currentGameWorld);
 		drawGameObjects(currentGameObjects);
 	};
 }
 
-// ce tile the player steps on
-function checkCollision()
+// check tile the player steps on
+function checkCollision(x = player.x, y = player.y)
 {
     // loop through the gameObjects list
 	for(let i = 0; i < currentGameObjects.length; i++)
 	{
         //.level1debugger;
         // if the players x and y matches the objects x and y
-		if(player.x == currentGameObjects[i].x && player.y == currentGameObjects[i].y)
+		if(x == currentGameObjects[i].x && y == currentGameObjects[i].y)
 		{
-            //debugger;
             console.log(currentGameObjects[i].type);            // debug
             switch(currentGameObjects[i].type)
             {
+                case "weapon":
+                    equipWeapon(currentGameObjects[i]);
+                    removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y, currentGameObjects[i].className);
+                    break;
                 case "key":
                     modifyInventory(currentGameObjects[i].name);
                     removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y, currentGameObjects[i].className);
