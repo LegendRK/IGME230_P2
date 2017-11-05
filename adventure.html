@@ -91,6 +91,8 @@ window.onload = ()=>{
 	setupEvents();
 	initializeInventory();
     setHealth();
+    
+    console.log(currentGameObjects);
 }
 
 
@@ -126,7 +128,13 @@ function equipWeapon(weapon)
 {
     if(player.weapon != undefined)
     {
-        inventory.rows[1].cells[0].innerHTML = weapon.name;
+        if(confirm("Would you like to drop your " + player.weapon.name + " for a " + weapon.name + "?"))
+        {
+            inventory.rows[1].cells[0].innerHTML = weapon.name;
+            addObjectToLevel(player.weapon);
+        }
+        else
+            return;
     }
     else
     {
@@ -206,8 +214,10 @@ function removeItemFromInventory(item, amount)
 
 function enemyHandling(enemy)
 {
+    // ask the player if they want to engage the enemy
     if(confirm("Enemy Health is " + enemy.health + ". Would you like to engage?"))
     {
+        // check if they have a weapon
         if(checkWeapon())
         {
             // first generate a hit percent chance
@@ -228,6 +238,7 @@ function enemyHandling(enemy)
                 alert("You missed the enemy!");
             }
             
+            // so the enemy doesn't attack the player if they are dead
             if(enemy.health > 0)
             {
                 // genereate a hit chance for the enemy
@@ -252,27 +263,24 @@ function enemyHandling(enemy)
                 alert("The monster was slain");
                 removeObjectFromLevel(enemy.x, enemy.y, enemy.className);
                 
-                //let randomTreasureIndex = Math.floor(Math.random() * (2 * (enemyLoot.treasureList.length + 1)));
-                let randomTreasureIndex = 0;
+                let randomTreasureIndex = Math.floor(Math.random() * (2 * (enemyLoot.treasureList.length + 1)));
                 console.log(randomTreasureIndex);
                 
+                // loot
                 if(randomTreasureIndex < enemyLoot.treasureList.length)
                 {
                     alert("Enemy dropped " + enemyLoot.treasureList[randomTreasureIndex].name + "!")
+                    
+                    // if enemy drops weapon, try and equip
                     if(enemyLoot.treasureList[randomTreasureIndex].type == "weapon")
                     {
-                        if(confirm("Would you like to equip this weapon?"))
-                            equipWeapon(enemyLoot.treasureList[randomTreasureIndex]);
+                        equipWeapon(enemyLoot.treasureList[randomTreasureIndex]);
                     }
                     else
                     {
                         modifyInventory(enemyLoot.treasureList[randomTreasureIndex].name);
                     }
                 }
-                
-                
-                
-                
                 return true;
             }
             else
@@ -410,6 +418,26 @@ function removeObjectFromLevel(objectX, objectY, objectClass)
         if(container.children[i].className == "gameObject " + objectClass)
             container.removeChild(container.children[i]);
     }
+}
+    
+function addObjectToLevel(object)
+{   
+    // add the object to all game objects
+    allGameObjects["level" + currentLevelNumber].push({x:player.x,  y:player.y,  type:object.type,     className: object.className, name:object.name, power:object.power, hit:object.hit});
+    
+    // add the object to the DOM
+    let container = document.querySelector("#gridContainer");
+    
+    let newSpan = document.createElement("span");
+    newSpan.className = "gameObject " + object.className;
+    newSpan.style.left = player.x * 32 + 'px';
+    newSpan.style.top = player.y * 32 + 'px';
+    container.appendChild(newSpan);
+    
+    // add the object to current game objects
+    currentGameObjects.push({x:player.x,  y:player.y,  type:object.type, className: object.className, name:object.name, power:object.power, hit:object.hit, element: newSpan});
+    
+    
 }
     
 function createGridElements(numRows,numCols){
@@ -633,8 +661,10 @@ function checkCollision(x = player.x, y = player.y)
             switch(currentGameObjects[i].type)
             {
                 case "weapon":
+                    let currentWeapon = player.weapon;
                     equipWeapon(currentGameObjects[i]);
-                    removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y, currentGameObjects[i].className);
+                    if(player.weapon != currentWeapon)
+                        removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y, currentGameObjects[i].className);
                     break;
                 case "key":
                     modifyInventory(currentGameObjects[i].name);

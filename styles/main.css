@@ -242,3 +242,22 @@ span.iron_dagger{
 	top: -100px;
 	background-position: -352px -320px;
 }
+
+span.iron_sword{
+    position:absolute;
+    left: -100px;
+	top: -100px;
+	background-position: -576px -320px;
+}
+span.iron_lance{
+    position:absolute;
+    left: -100px;
+	top: -100px;
+	background-position: -128px -320px;
+}
+span.iron_axe{
+    position:absolute;
+    left: -100px;
+	top: -100px;
+	background-position: -672px -320px;
+}

@@ -82,7 +82,10 @@ const allGameObjects = {
 		{x:10, y:16, type:"ring",		className: cssClass.RING1, 		name:"Ring"},
 		{x:29, y:9,	 type:"door",		className: cssClass.DOOR, 		name:"Door"},
 		{x:29, y:10, type:"door",		className: cssClass.DOOR, 		name:"Door"},
-        {x:2,  y:2,  type:"weapon",     className: cssClass.IRONDAGGER, name:"Dagger", power:3, hit:95}
+        {x:2,  y:2,  type:"weapon",     className: cssClass.IRONDAGGER, name:"Dagger", power:3, hit:100},
+        //{x:3,  y:2,  type:"weapon",     className: cssClass.IRONSWORD, name:"Sword", power:4, hit:90},
+        //{x:4,  y:2,  type:"weapon",     className: cssClass.IRONLANCE, name:"Lance", power:5, hit:75},
+        //{x:5,  y:2,  type:"weapon",     className: cssClass.IRONAXE, name:"Axe", power:6, hit:65},
 	],
 	
 	level2:[
