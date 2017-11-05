@@ -599,7 +599,29 @@ function movePlayer(e){
             {
                 switch(currentGameObjects[i].type)
                 {
+					case "pixie":
+						if(confirm("Teehee, you found me. Would you like my aid?"))
+						{
+							alert("Allow me to soothe your wounds.");
+							removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y, currentGameObjects[i].className);
+							player.health = 30;
+						}
+						else
+						{
+							alert("Return to me whenever your journey leaves you weary.");
+							return false;
+						}
+						break;
+					case "npc":
+						alert("Thank you for saving me and recovering the Pendant of Power!");
+						return false;
                     case "guard1":
+                        if(!guardCheck(1))
+                            return false;
+                        else
+                            removeObjectFromLevel(currentGameObjects[i].x, currentGameObjects[i].y, currentGameObjects[i].className);
+                        break;
+					case "guard2":
                         if(!guardCheck(1))
                             return false;
                         else
@@ -685,6 +707,8 @@ function checkCollision(x = player.x, y = player.y)
 				case "door":
 					changeLevel();
 					break;
+				case "pixie":
+					break;
             }
 		}
 	}
@@ -711,7 +735,7 @@ function changeLevel()
 		
 		player.x = 1;
 	}
-	if(currentLevelNumber == 2)
+	else if(currentLevelNumber == 2)
 	{
 		// if player enters the left door
 		if(player.x == 0)
@@ -719,6 +743,67 @@ function changeLevel()
 			resetLevel(1);
 			
 			player.x = 28;
+		}
+		// if player enters the right door
+		else if(player.x == 29)
+		{
+			resetLevel(6);
+			
+			player.x = 1;
+		}
+		// if player enters the top door
+		else if(player.y == 0)
+		{
+			resetLevel(3);
+			
+			player.y = 18;
+		}
+		// if player enters the bottom door
+		else if(player.y == 19)
+		{
+			resetLevel(4);
+			
+			player.y = 1;
+		}
+	}
+	else if(currentLevelNumber == 3)
+	{
+		resetLevel(2);
+		
+		player.y = 1;
+	}
+	else if(currentLevelNumber == 4)
+	{
+		resetLevel(2);
+		
+		player.y = 18;
+	}
+	else if(currentLevelNumber == 5)
+	{
+		if(player.x == 0)
+		{
+			resetLevel(6);
+		
+			player.x = 28;
+		}
+		else if(player.x == 14 || player.x == 15)
+		{
+			resetLevel(7);
+		}
+	}
+	else if(currentLevelNumber == 6)
+	{
+		if(player.x == 0)
+		{
+			resetLevel(2);
+			
+			player.x = 28;
+		}
+		if(player.x == 29)
+		{
+			resetLevel(5);
+			
+			player.x = 1;
 		}
 	}
 	

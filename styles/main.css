@@ -166,6 +166,14 @@ span.key1{
 	background-position: -1024px -448px;
 }
 
+span.npc{ 
+	position:absolute;
+	left: -100px;
+	top: -100px;
+	z-index: 500; /* layered between other game objects and player */
+	background-position: -256px -128px;
+}
+
 span.monster1{ 
 	position:absolute;
 	left: -100px;
@@ -190,6 +198,30 @@ span.monster3{
 	background-position: -192px -224px;
 }
 
+span.monster4{ 
+	position:absolute;
+	left: -100px;
+	top: -100px;
+	z-index: 500; /* layered between other game objects and player */
+	background-position: -96px -32px;
+}
+
+span.monster5{ 
+	position:absolute;
+	left: -100px;
+	top: -100px;
+	z-index: 500; /* layered between other game objects and player */
+	background-position: -352px -32px;
+}
+
+span.boss{ 
+	position:absolute;
+	left: -100px;
+	top: -100px;
+	z-index: 500; /* layered between other game objects and player */
+	background-position: -1024px -96px;
+}
+
 span.door{ 
 	position:absolute;
 	left: -100px;
@@ -208,6 +240,14 @@ span.player{
 }
 
 span.guard{
+    position:absolute;
+    background: : url(../images/nethack-32x32.png);
+    background-position: -512px -256px;
+    left:-100px;
+    right:-100px;
+}
+
+span.guard2{
     position:absolute;
     background: : url(../images/nethack-32x32.png);
     background-position: -512px -256px;
@@ -236,11 +276,33 @@ span.treasure2{
 	background-position: -928px -448px;
 }
 
+span.treasure3{ 
+	position:absolute;
+	left: -100px;
+	top: -100px;
+	background-position: -0px -640px;
+}
+
+span.treasure4{ 
+	position:absolute;
+	left: -100px;
+	top: -100px;
+	z-index: 500;
+	background-position: -736px -448px;
+}
+
 span.iron_dagger{
     position:absolute;
     left: -100px;
 	top: -100px;
 	background-position: -352px -320px;
+}
+
+span.pixie{ 
+	position:absolute;
+	left: -100px;
+	top: -100px;
+	background-position: -1088px -256px;
 }
 
 span.iron_sword{
