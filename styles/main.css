@@ -58,13 +58,28 @@ div#inventory td.name
 	width: 100px;
 }
 
-h2#health
+div#healthBox
 {
     top:200px;
-	left: 950px;
+	left:1000px;
 	padding:0;
 	display:inline-block;
 	position:absolute;
+    border: 1px solid black;
+}
+
+div#healthBox span
+{
+    border: 1px solid black;
+    color:green;
+}
+
+div#healthBox h2
+{
+    margin-bottom:.1em;
+    margin-top:.15em;
+    margin-right:5px;
+    margin-left:5px;
 }
 
 div#gridContainer{
@@ -233,7 +248,7 @@ span.door{
 /* player style */
 span.player{ 
 	background: url(../images/nethack-32x32.png);
-	background-position: -96px -96px;
+	background-position: -128px -32px;
 	z-index: 1000; /* On top of everything */
 	transition-property: all;
 	transition-duration: .25s;
@@ -250,7 +265,7 @@ span.guard{
 span.guard2{
     position:absolute;
     background: : url(../images/nethack-32x32.png);
-    background-position: -512px -256px;
+    background-position: -416px -256px;
     left:-100px;
     right:-100px;
 }
