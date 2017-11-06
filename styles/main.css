@@ -256,7 +256,6 @@ span.player{
 
 span.guard{
     position:absolute;
-    background: : url(../images/nethack-32x32.png);
     background-position: -512px -256px;
     left:-100px;
     right:-100px;
@@ -264,7 +263,6 @@ span.guard{
 
 span.guard2{
     position:absolute;
-    background: : url(../images/nethack-32x32.png);
     background-position: -416px -256px;
     left:-100px;
     right:-100px;
