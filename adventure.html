@@ -274,6 +274,7 @@ function enemyHandling(enemy)
             // check if the player is dead
             if(player.health <= 0)
             {
+				alert("You have been slain.");
                 player.health = 0;
                 resetLevel(8);
                 player.x = 14;
