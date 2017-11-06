@@ -336,3 +336,29 @@ span.iron_axe{
 	top: -100px;
 	background-position: -672px -320px;
 }
+
+p{
+	display:inline-block;
+	position:absolute;
+	top:90px;
+	left:1000px;
+}
+
+a{
+	font-family: 'Press Start 2P', cursive;
+	font-size:.7em;
+	color: black;
+}
+
+a:hover{
+	text-decoration:underline;
+}
+
+a:active{
+	text-decoration:underline;
+	font-weight:bold;
+}
+
+a:visited{
+	color:#262626;
+}
